@@ -1,5 +1,5 @@
 {
-	"name": "IngestPreviousRawDataLake",
+	"name": "IngestJsonRawDataLake",
 	"properties": {
 		"activities": [
 			{
