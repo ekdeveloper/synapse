@@ -14,7 +14,7 @@
 			],
 			"sinks": [
 				{
-					"name": "sink1"
+					"name": "LakeProviders"
 				}
 			],
 			"transformations": [
@@ -56,7 +56,7 @@
 				"          ZIP = {_source}.locations[1].zip",
 				"     ),",
 				"     preCommands: [],",
-				"     postCommands: []) ~> sink1"
+				"     postCommands: []) ~> LakeProviders"
 			]
 		}
 	}
