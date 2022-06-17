@@ -31,7 +31,7 @@
 				"     ignoreNoFilesFound: false,",
 				"     moveFiles: ['providers/raw','providers/processed'],",
 				"     documentForm: 'documentPerLine',",
-				"     wildcardPaths:[('providers/raw/true/**.json')]) ~> Json",
+				"     wildcardPaths:[('providers/raw/true/Baltimore_21201/*.json')]) ~> Json",
 				"Json sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     store: 'synapse',",
