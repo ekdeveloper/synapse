@@ -17,7 +17,11 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "filterNullNpi"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          {_index} as string,",
@@ -32,7 +36,8 @@
 				"     moveFiles: ['providers/raw','providers/processed'],",
 				"     documentForm: 'documentPerLine',",
 				"     wildcardPaths:[('providers/raw/true/Baltimore_21201/*.json')]) ~> Json",
-				"Json sink(allowSchemaDrift: true,",
+				"Json filter(isNull({_id})) ~> filterNullNpi",
+				"filterNullNpi sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     store: 'synapse',",
 				"     databaseType: 'spark',",
