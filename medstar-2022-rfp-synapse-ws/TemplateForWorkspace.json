@@ -1,0 +1,1596 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "medstar-2022-rfp-synapse-ws"
+		},
+		"AzureFunction1_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunction1'"
+		},
+		"medstar-2022-rfp-synapse-ws-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'medstar-2022-rfp-synapse-ws-WorkspaceDefaultSqlServer'"
+		},
+		"AzureFunction1_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://findmatchingmedstarrfp.azurewebsites.net"
+		},
+		"AzureMLService_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "ff1270cf-e29d-4293-aebb-230c2f24120d"
+		},
+		"AzureMLService_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "medstar_2022_rfp"
+		},
+		"medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://medstarrfpdatalakeeastus.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/providerDataMapping')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ProviderDataMappingCsv')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/providerCsvDataMapping')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Rule Engine Find Matching",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "Find Matching",
+							"method": "GET",
+							"headers": {}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureFunction1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Provider"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureFunction1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CleanedClientDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "clients/cleaned",
+						"fileSystem": "medstarrfpdatalakefs"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CuratedClientDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "clients/cleaned",
+						"fileSystem": "medstarrfpdatalakefs"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MatchingData')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "clients/matching",
+						"fileSystem": "medstarrfpdatalakefs"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RawClientSource1Dataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "clients/raw/",
+						"fileSystem": "medstarrfpdatalakefs"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RawProvider')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "providers/raw",
+						"fileSystem": "medstarrfpdatalakefs"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"_index": {
+							"type": "string"
+						},
+						"_type": {
+							"type": "string"
+						},
+						"_source": {
+							"type": "object",
+							"properties": {
+								"provider_type": {
+									"type": "string"
+								},
+								"metadata": {
+									"type": "object",
+									"properties": {
+										"last_updated": {
+											"type": "string"
+										},
+										"_source": {
+											"type": "object",
+											"properties": {
+												"last_updated": {
+													"type": "string"
+												},
+												"created": {
+													"type": "null"
+												},
+												"pma_last_updated": {
+													"type": "null"
+												},
+												"last_modified": {
+													"type": "string"
+												}
+											}
+										},
+										"last_modified": {
+											"type": "string"
+										}
+									}
+								},
+								"notes": {
+									"type": "null"
+								},
+								"chair_at_api": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"MedStar Washington Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Franklin Square Medical Center": {
+												"type": "string"
+											},
+											"MedStar Harbor Hospital": {
+												"type": "string"
+											},
+											"MedStar National Rehabilitation Network": {
+												"type": "string"
+											},
+											"MedStar Medical Group": {
+												"type": "string"
+											},
+											"MedStar Union Memorial Hospital": {
+												"type": "string"
+											},
+											"MedStar Georgetown University Hospital": {
+												"type": "string"
+											},
+											"MedStar Southern Maryland Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Good Samaritan Hospital": {
+												"type": "string"
+											},
+											"MedStar Montgomery Medical Center": {
+												"type": "string"
+											},
+											"MedStar St. Mary's Hospital": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"sort_preferences": {
+									"type": "object",
+									"properties": {
+										"networks": {
+											"type": "integer"
+										}
+									}
+								},
+								"blogs": {
+									"type": "null"
+								},
+								"appointment_reasons": {
+									"type": "array"
+								},
+								"clinical_focus": {
+									"type": "string"
+								},
+								"show_in_pmac": {
+									"type": "string"
+								},
+								"provider_is_employed": {
+									"type": "string"
+								},
+								"videos": {
+									"type": "array"
+								},
+								"degrees": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"source": {
+												"type": "string"
+											},
+											"source_url": {
+												"type": "null"
+											}
+										}
+									}
+								},
+								"practice_groups": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"has_info": {
+												"type": "boolean"
+											},
+											"name": {
+												"type": "string"
+											},
+											"id": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"age_groups_seen_range": {
+									"type": "null"
+								},
+								"employed": {
+									"type": "boolean"
+								},
+								"default_timezone": {
+									"type": "string"
+								},
+								"network_affiliations": {
+									"type": "array"
+								},
+								"specialties": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"specialty": {
+												"type": "string"
+											},
+											"subspecialty": {
+												"type": "null"
+											},
+											"aliases": {
+												"type": "array",
+												"items": {
+													"type": "string"
+												}
+											},
+											"is_certified": {
+												"type": "boolean"
+											},
+											"practice_focus": {
+												"type": "null"
+											},
+											"eui": {
+												"type": "string"
+											},
+											"piped_name": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"service_line_lead_not_at": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"multi_resource_scheduling": {
+									"type": "null"
+								},
+								"reviews": {
+									"type": "null"
+								},
+								"medical_school": {
+									"type": "array"
+								},
+								"manually_created": {
+									"type": "null"
+								},
+								"id": {
+									"type": "integer"
+								},
+								"customer_code": {
+									"type": "string"
+								},
+								"professional_statement": {
+									"type": "string"
+								},
+								"main_contacts": {
+									"type": "object",
+									"properties": {
+										"phone": {
+											"type": "string"
+										},
+										"fax": {
+											"type": "string"
+										}
+									}
+								},
+								"access_program_status": {
+									"type": "null"
+								},
+								"in_the_news": {
+									"type": "string"
+								},
+								"image_url": {
+									"type": "null"
+								},
+								"raw": {
+									"type": "object",
+									"properties": {
+										"age_groups_seen": {
+											"type": "array"
+										},
+										"primary_specialty": {
+											"type": "string"
+										},
+										"contacts": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"contact_type": {
+														"type": "string"
+													},
+													"extension": {
+														"type": "null"
+													},
+													"subtype": {
+														"type": "null"
+													},
+													"value": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									}
+								},
+								"case_types_seen": {
+									"type": "array"
+								},
+								"blacklisted_not_at": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"number_of_videos": {
+									"type": "integer"
+								},
+								"about_the_provider": {
+									"type": "null"
+								},
+								"location_change_form": {
+									"type": "string"
+								},
+								"years_in_practice": {
+									"type": "null"
+								},
+								"primary_video": {
+									"type": "string"
+								},
+								"blacklisted_at": {
+									"type": "array"
+								},
+								"service_line_lead_at": {
+									"type": "array"
+								},
+								"service_line_lead_at_api": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"MedStar Washington Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Franklin Square Medical Center": {
+												"type": "string"
+											},
+											"MedStar Harbor Hospital": {
+												"type": "string"
+											},
+											"MedStar National Rehabilitation Network": {
+												"type": "string"
+											},
+											"MedStar Medical Group": {
+												"type": "string"
+											},
+											"MedStar Union Memorial Hospital": {
+												"type": "string"
+											},
+											"MedStar Georgetown University Hospital": {
+												"type": "string"
+											},
+											"MedStar Southern Maryland Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Good Samaritan Hospital": {
+												"type": "string"
+											},
+											"MedStar Montgomery Medical Center": {
+												"type": "string"
+											},
+											"MedStar St. Mary's Hospital": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"chief_at_api": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"MedStar Washington Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Franklin Square Medical Center": {
+												"type": "string"
+											},
+											"MedStar Harbor Hospital": {
+												"type": "string"
+											},
+											"MedStar National Rehabilitation Network": {
+												"type": "string"
+											},
+											"MedStar Medical Group": {
+												"type": "string"
+											},
+											"MedStar Union Memorial Hospital": {
+												"type": "string"
+											},
+											"MedStar Georgetown University Hospital": {
+												"type": "string"
+											},
+											"MedStar Southern Maryland Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Good Samaritan Hospital": {
+												"type": "string"
+											},
+											"MedStar Montgomery Medical Center": {
+												"type": "string"
+											},
+											"MedStar St. Mary's Hospital": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"chief_not_at": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"scope_of_practice": {
+									"type": "object",
+									"properties": {
+										"types": {
+											"type": "object"
+										},
+										"concepts": {
+											"type": "array"
+										}
+									}
+								},
+								"accepting_new_patients": {
+									"type": "boolean"
+								},
+								"name": {
+									"type": "object",
+									"properties": {
+										"full_with_prefix": {
+											"type": "string"
+										},
+										"full_name": {
+											"type": "string"
+										},
+										"prefix": {
+											"type": "string"
+										},
+										"full_with_degrees": {
+											"type": "string"
+										},
+										"last_name": {
+											"type": "string"
+										},
+										"raw": {
+											"type": "object",
+											"properties": {
+												"full_name": {
+													"type": "string"
+												},
+												"middle_name": {
+													"type": "string"
+												}
+											}
+										},
+										"suffix_with_degrees": {
+											"type": "string"
+										},
+										"middle_name": {
+											"type": "string"
+										},
+										"suffix": {
+											"type": "null"
+										},
+										"first_name": {
+											"type": "string"
+										},
+										"full_with_prefix_and_degrees": {
+											"type": "string"
+										}
+									}
+								},
+								"current_status": {
+									"type": "null"
+								},
+								"is_specialty_care": {
+									"type": "boolean"
+								},
+								"preferred_name": {
+									"type": "null"
+								},
+								"social_sites": {
+									"type": "string"
+								},
+								"show_in_api": {
+									"type": "null"
+								},
+								"gender": {
+									"type": "string"
+								},
+								"appointment_type_code_whitelist": {
+									"type": "array"
+								},
+								"blacklisted_at_api": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"MedStar Washington Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Franklin Square Medical Center": {
+												"type": "string"
+											},
+											"MedStar Harbor Hospital": {
+												"type": "string"
+											},
+											"MedStar National Rehabilitation Network": {
+												"type": "string"
+											},
+											"MedStar Medical Group": {
+												"type": "string"
+											},
+											"MedStar Union Memorial Hospital": {
+												"type": "string"
+											},
+											"MedStar Georgetown University Hospital": {
+												"type": "string"
+											},
+											"MedStar Southern Maryland Hospital Center": {
+												"type": "string"
+											},
+											"MedStar Good Samaritan Hospital": {
+												"type": "string"
+											},
+											"MedStar Montgomery Medical Center": {
+												"type": "string"
+											},
+											"MedStar St. Mary's Hospital": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"primary_specialty": {
+									"type": "string"
+								},
+								"external_id": {
+									"type": "string"
+								},
+								"training": {
+									"type": "array"
+								},
+								"networks": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"network": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"is_doctor": {
+									"type": "boolean"
+								},
+								"board_certifications": {
+									"type": "array"
+								},
+								"insurance_accepted": {
+									"type": "array"
+								},
+								"availability_last_updated": {
+									"type": "null"
+								},
+								"supplemental_videos": {
+									"type": "string"
+								},
+								"number_of_pictures": {
+									"type": "integer"
+								},
+								"referral_phone": {
+									"type": "null"
+								},
+								"languages": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"language": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"chief_at": {
+									"type": "array"
+								},
+								"npi": {
+									"type": "string"
+								},
+								"appt_scheduler_emails": {
+									"type": "null"
+								},
+								"hospital_affiliations": {
+									"type": "array"
+								},
+								"chair_not_at": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"location_schedule": {
+									"type": "string"
+								},
+								"fellowship": {
+									"type": "string"
+								},
+								"is_primary_care": {
+									"type": "boolean"
+								},
+								"clinical_contact": {
+									"type": "null"
+								},
+								"chair_at": {
+									"type": "array"
+								},
+								"entity_type": {
+									"type": "string"
+								},
+								"podcasts": {
+									"type": "null"
+								},
+								"research_pubs": {
+									"type": "null"
+								},
+								"age_groups_seen": {
+									"type": "array"
+								},
+								"patient_testimonials": {
+									"type": "string"
+								},
+								"awards": {
+									"type": "null"
+								},
+								"professional_activities": {
+									"type": "string"
+								},
+								"is_live": {
+									"type": "boolean"
+								},
+								"locations": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"commercial_entity_name": {
+												"type": "null"
+											},
+											"distance": {
+												"type": "null"
+											},
+											"city": {
+												"type": "string"
+											},
+											"timezone": {
+												"type": "string"
+											},
+											"doctor_contacts": {
+												"type": "object",
+												"properties": {
+													"phone": {
+														"type": "string"
+													},
+													"fax": {
+														"type": "string"
+													}
+												}
+											},
+											"external_id": {
+												"type": "string"
+											},
+											"external_organization_id": {
+												"type": "null"
+											},
+											"networks": {
+												"type": "array"
+											},
+											"type": {
+												"type": "string"
+											},
+											"ehr_location_id": {
+												"type": "null"
+											},
+											"location_contacts": {
+												"type": "object",
+												"properties": {
+													"phone": {
+														"type": "string"
+													},
+													"fax": {
+														"type": "string"
+													}
+												}
+											},
+											"source_system_type": {
+												"type": "null"
+											},
+											"rank": {
+												"type": "integer"
+											},
+											"street1": {
+												"type": "string"
+											},
+											"id": {
+												"type": "string"
+											},
+											"state": {
+												"type": "string"
+											},
+											"street2": {
+												"type": "string"
+											},
+											"email": {
+												"type": "null"
+											},
+											"zip": {
+												"type": "string"
+											},
+											"office_hours": {
+												"type": "null"
+											},
+											"address": {
+												"type": "object",
+												"properties": {
+													"line": {
+														"type": "string"
+													},
+													"building": {
+														"type": "string"
+													}
+												}
+											},
+											"source_system": {
+												"type": "null"
+											},
+											"coordinates": {
+												"type": "object",
+												"properties": {
+													"lon": {
+														"type": "number"
+													},
+													"lat": {
+														"type": "number"
+													}
+												}
+											},
+											"primary_marketable_location_id": {
+												"type": "null"
+											},
+											"raw": {
+												"type": "object",
+												"properties": {
+													"suite": {
+														"type": "string"
+													},
+													"street1": {
+														"type": "string"
+													},
+													"street2": {
+														"type": "string"
+													},
+													"contacts": {
+														"type": "array"
+													}
+												}
+											},
+											"suite": {
+												"type": "null"
+											},
+											"accepting_new_patients": {
+												"type": "null"
+											},
+											"facility_fee": {
+												"type": "boolean"
+											},
+											"name": {
+												"type": "string"
+											},
+											"associated_marketable_location_ids": {
+												"type": "array"
+											}
+										}
+									}
+								},
+								"status_transitions": {
+									"type": "null"
+								},
+								"personal_email": {
+									"type": "null"
+								}
+							}
+						},
+						"_id": {
+							"type": "string"
+						},
+						"_score": {
+							"type": "number"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureFunction1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('AzureFunction1_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureFunction1_functionKey')]"
+					},
+					"authentication": "MSI"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureMLService')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMLService",
+				"typeProperties": {
+					"subscriptionId": "[parameters('AzureMLService_properties_typeProperties_subscriptionId')]",
+					"resourceGroupName": "[parameters('AzureMLService_properties_typeProperties_resourceGroupName')]",
+					"mlWorkspaceName": "rfpclassificationws",
+					"authentication": "MSI"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/medstar-2022-rfp-synapse-ws-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('medstar-2022-rfp-synapse-ws-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Synapse Serverless SQL scripts')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- If you do not have a Master Key on your DW you will need to create one\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'medstarrfp@2022' ;\n\nCREATE DATABASE SCOPED CREDENTIAL msi_cred \nWITH IDENTITY = 'Managed Service Identity' ;\n\nCREATE EXTERNAL DATA SOURCE datalake \nWITH \n  (\n    LOCATION = 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net' , \n    CREDENTIAL = msi_cred\n  ) ;  \n\nCREATE EXTERNAL FILE FORMAT parquet_format  \nWITH (  \n  FORMAT_TYPE = PARQUET,  \n  DATA_COMPRESSION =  'org.apache.hadoop.io.compress.GzipCodec'\n); \n\nCREATE EXTERNAL FILE FORMAT json_format  \nWITH (  \n    FORMAT_TYPE = JSON,  \n    DATA_COMPRESSION =  'org.apache.hadoop.io.compress.GzipCodec'\n);\n\nCREATE EXTERNAL FILE FORMAT comma_delimit_format  \nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,  \n    FORMAT_OPTIONS (  \n        FIELD_TERMINATOR = ',',  \n        DATE_FORMAT = 'MM/dd/yyyy' ),  \n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.GzipCodec'\n);  \n\nCREATE EXTERNAL TABLE [dbo].[provider]\n( [NPI] [int]  NULL,\n  [ProviderName] nvarchar NULL,\n  [ProviderPrimarySpeciality] nvarchar NULL )\nWITH\n(\n    LOCATION='/providers/raw/true/' ,\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = parquet_format\n) ;\n\nCreate or ALTER VIEW provider_view\nas select * from \nOPENROWSET (\n  BULK datalake\n)\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/updatecuratedclients')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE PROC [dbo].[updatecuratedclients]\nAS\nBEGIN\nUPDATE [dbo].[curatedclients]\nSET version = 1\nEND",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "medstar-rfp-client-sql-db",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/KQL example')]",
+			"type": "Microsoft.Synapse/workspaces/kqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "['providers']\n| mv-expand _source_specialties to typeof(string)\n| project specialty=tostring(parse_json(_source_specialties).specialty)\n| summarize specialtyCount = count() by specialty\n| render piechart",
+					"metadata": {
+						"language": "kql"
+					},
+					"currentConnection": {
+						"poolName": "medstarrfpde",
+						"databaseName": "dataexplorer"
+					}
+				},
+				"type": "KqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RawLakeDb')]",
+			"type": "Microsoft.Synapse/workspaces/databases",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"Ddls": [
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Name": "RawLakeDb",
+							"EntityType": "DATABASE",
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"Properties": {
+								"IsSyMSCDMDatabase": true
+							},
+							"Source": {
+								"Provider": "ADLS",
+								"Location": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/raw/true",
+								"Properties": {
+									"FormatType": "csv",
+									"LinkedServiceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage"
+								}
+							}
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					},
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Name": "Locations",
+							"EntityType": "TABLE",
+							"Namespace": {
+								"DatabaseName": "RawLakeDb"
+							},
+							"Description": "",
+							"TableType": "EXTERNAL",
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"StorageDescriptor": {
+								"Columns": [
+									{
+										"Name": "Address",
+										"Description": "",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "State",
+										"Description": "",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "City",
+										"Description": "",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "Zip",
+										"Description": "",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									}
+								],
+								"Format": {
+									"InputFormat": "org.apache.hadoop.mapred.SequenceFileInputFormat",
+									"OutputFormat": "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat",
+									"FormatType": "csv",
+									"SerializeLib": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+									"Properties": {
+										"path": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/raw/true/Locations",
+										"delimiter": ",",
+										"multiLine": "false",
+										"firstRowAsHeader": "false",
+										"serialization.format": "1",
+										"escape": "\\",
+										"quote": "\"",
+										"FormatTypeSetToDatabaseDefault": true,
+										"header": "false"
+									}
+								},
+								"Source": {
+									"Provider": "ADLS",
+									"Location": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/raw/true/Locations",
+									"Properties": {
+										"LinkedServiceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+										"LocationSetToDatabaseDefault": true
+									}
+								},
+								"Properties": {
+									"textinputformat.record.delimiter": ",",
+									"compression": "{\"type\":\"None\",\"level\":\"optimal\"}",
+									"derivedModelAttributeInfo": "{\"attributeReferences\":{}}"
+								},
+								"Compressed": false,
+								"IsStoredAsSubdirectories": false
+							},
+							"Properties": {
+								"Description": "",
+								"DisplayFolderInfo": "{\"name\":\"Others\",\"colorCode\":\"\"}",
+								"PrimaryKeys": "Address",
+								"spark.sql.sources.provider": "csv"
+							},
+							"Retention": 0,
+							"Temporary": false,
+							"IsRewriteEnabled": false,
+							"Partitioning": {}
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					},
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Name": "providers",
+							"EntityType": "TABLE",
+							"Namespace": {
+								"DatabaseName": "RawLakeDb"
+							},
+							"Description": "",
+							"TableType": "EXTERNAL",
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"StorageDescriptor": {
+								"Columns": [
+									{
+										"Name": "NPI",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "PROVIDER_TYPE",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "NAME",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "GENDER",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "SPECIALITY",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "Location",
+										"Description": "",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									}
+								],
+								"Format": {
+									"InputFormat": "org.apache.hadoop.mapred.SequenceFileInputFormat",
+									"OutputFormat": "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat",
+									"FormatType": "csv",
+									"SerializeLib": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+									"Properties": {
+										"path": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv",
+										"delimiter": ",",
+										"multiLine": "false",
+										"firstRowAsHeader": "true",
+										"serialization.format": "1",
+										"FormatTypeSetToDatabaseDefault": false,
+										"header": "true"
+									}
+								},
+								"Source": {
+									"Provider": "ADLS",
+									"Location": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv",
+									"Properties": {
+										"LinkedServiceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+										"LocationSetToDatabaseDefault": false
+									}
+								},
+								"Properties": {
+									"textinputformat.record.delimiter": ",",
+									"compression": "{\"type\":\"None\",\"level\":\"optimal\"}",
+									"derivedModelAttributeInfo": "{\"attributeReferences\":{}}"
+								},
+								"Compressed": false,
+								"IsStoredAsSubdirectories": false
+							},
+							"Properties": {
+								"Description": "",
+								"DisplayFolderInfo": "{\"name\":\"Others\",\"colorCode\":\"\"}",
+								"PrimaryKeys": "NPI",
+								"spark.sql.sources.provider": "csv",
+								"sql:IsAppendOnly": true
+							},
+							"Retention": 0,
+							"Temporary": false,
+							"IsRewriteEnabled": false
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					},
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Name": "relationship-jlkhypfnpm",
+							"EntityType": "RELATIONSHIP",
+							"Namespace": {
+								"DatabaseName": "RawLakeDb"
+							},
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"FromTableName": "Locations",
+							"ToTableName": "providers",
+							"ColumnRelationshipInformations": [
+								{
+									"FromColumnName": "Address",
+									"ToColumnName": "Location"
+								}
+							],
+							"RelationshipType": 0,
+							"Properties": {}
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ProviderCsvMapping')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CsvProviderMapping')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Providers]\nGO\nSELECT TOP(10) *\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    FIELDTERMINATOR = ',',\n    FIRSTROW = 1\n) WITH \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_JSON')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.firstname') as firstname,\n    JSON_VALUE(doc, '$.lastname') as lastname,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/Clients.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Clients",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_JSON_Copy1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.resourceType') as resourceType,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/raw/true/2021/11/11/Blake449_Swift555_fd4fb1ee-3f68-fd42-0610-07f1bfe9b708.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows\n\n-- test remove all spaces",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Clients",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cost')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT [type],\n    [data_processed_mb],\n    CAST(5 * [data_processed_mb] / (1024.0 * 1024.0 ) AS DECIMAL(12,2)) AS cost\nFROM sys.dm_external_data_processed;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		}
+	]
+}
