@@ -14,6 +14,10 @@
 			],
 			"sinks": [
 				{
+					"linkedService": {
+						"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultSqlServer",
+						"type": "LinkedServiceReference"
+					},
 					"name": "LakeProviders"
 				}
 			],
@@ -39,22 +43,17 @@
 				"Json filter(isNull({_id})) ~> filterNullNpi",
 				"filterNullNpi sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     store: 'synapse',",
-				"     databaseType: 'spark',",
 				"     format: 'table',",
-				"     database: 'RawLakeDb',",
-				"     tableName: 'providers',",
-				"     mapColumn(",
-				"          NPI = {_id},",
-				"          PROVIDER_TYPE = {_source}.provider_type,",
-				"          NAME = {_source}.name.full_name,",
-				"          GENDER = {_source}.gender,",
-				"          SPECIALITY = {_source}.specialties[1].specialty,",
-				"          ADDRESS = {_source}.locations[1].address,",
-				"          CITY = {_source}.locations[1].city,",
-				"          STATE = {_source}.locations[1].state,",
-				"          ZIP = {_source}.locations[1].zip",
-				"     ),",
+				"     store: 'synapseanalytics',",
+				"     schemaName: '',",
+				"     tableName: '',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     allowCopyCommand: true,",
+				"     staged: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
 				"     preCommands: [],",
 				"     postCommands: []) ~> LakeProviders"
 			]
