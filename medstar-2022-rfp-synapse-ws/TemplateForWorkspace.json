@@ -1611,6 +1611,26 @@
 				"type": "SqlQuery"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV_Duplicates')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Providers]\nGO\n\ncreate EXTERNAL table [dbo].[providerduplicate] \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n)\nWITH\n(\n    Location = 'providers/test_duplicate/',\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = csvFileFormat\n) \n\nSELECT DISTINCT * from providers.dbo.providerduplicate;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
 		}
 	]
 }
