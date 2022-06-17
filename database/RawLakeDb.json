@@ -1,0 +1,22 @@
+{
+	"name": "RawLakeDb",
+	"properties": {
+		"Name": "RawLakeDb",
+		"EntityType": "DATABASE",
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"IsSyMSCDMDatabase": true
+		},
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/raw/true",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage"
+			}
+		}
+	},
+	"type": "DATABASE"
+}

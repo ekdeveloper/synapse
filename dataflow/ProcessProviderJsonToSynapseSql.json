@@ -14,10 +14,6 @@
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "CuratedClientDataset",
-						"type": "DatasetReference"
-					},
 					"name": "sink1"
 				}
 			],
@@ -38,11 +34,13 @@
 				"     wildcardPaths:[('providers/raw/true/**.json')]) ~> Json",
 				"Json sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     umask: 0022,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'Provider',",
+				"     tableName: '',",
 				"     preCommands: [],",
-				"     postCommands: [],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     postCommands: []) ~> sink1"
 			]
 		}
 	}
