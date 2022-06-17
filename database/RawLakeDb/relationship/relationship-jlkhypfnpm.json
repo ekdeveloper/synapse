@@ -1,0 +1,23 @@
+{
+	"name": "relationship-jlkhypfnpm",
+	"properties": {
+		"Name": "relationship-jlkhypfnpm",
+		"EntityType": "RELATIONSHIP",
+		"Namespace": {
+			"DatabaseName": "RawLakeDb"
+		},
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"FromTableName": "Locations",
+		"ToTableName": "providers",
+		"ColumnRelationshipInformations": [
+			{
+				"FromColumnName": "Address",
+				"ToColumnName": "Location"
+			}
+		],
+		"RelationshipType": 0
+	},
+	"type": "RELATIONSHIP"
+}
