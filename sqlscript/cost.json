@@ -1,0 +1,17 @@
+{
+	"name": "cost",
+	"properties": {
+		"content": {
+			"query": "SELECT [type],\n    [data_processed_mb],\n    CAST(5 * [data_processed_mb] / (1024.0 * 1024.0 ) AS DECIMAL(12,2)) AS cost\nFROM sys.dm_external_data_processed;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
