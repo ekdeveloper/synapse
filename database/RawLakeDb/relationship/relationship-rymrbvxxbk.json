@@ -1,0 +1,23 @@
+{
+	"name": "relationship-rymrbvxxbk",
+	"properties": {
+		"Name": "relationship-rymrbvxxbk",
+		"EntityType": "RELATIONSHIP",
+		"Namespace": {
+			"DatabaseName": "RawLakeDb"
+		},
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"FromTableName": "providers",
+		"ToTableName": "",
+		"ColumnRelationshipInformations": [
+			{
+				"FromColumnName": "",
+				"ToColumnName": ""
+			}
+		],
+		"RelationshipType": 0
+	},
+	"type": "RELATIONSHIP"
+}
