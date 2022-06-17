@@ -17,7 +17,7 @@
 		],
 		"concurrency": 1,
 		"folder": {
-			"name": "ProviderDataMappingCsv"
+			"name": "ProviderDataMappingCsvToLakeDB"
 		},
 		"annotations": []
 	}
