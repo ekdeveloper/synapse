@@ -17,8 +17,8 @@
 					"Name": "NPI",
 					"OriginDataTypeName": {
 						"TypeName": "string",
-						"IsNullable": false,
 						"IsComplexType": false,
+						"IsNullable": false,
 						"Length": 256,
 						"Properties": {
 							"HIVE_TYPE_STRING": "string"
@@ -29,8 +29,8 @@
 					"Name": "PROVIDER_TYPE",
 					"OriginDataTypeName": {
 						"TypeName": "string",
-						"IsNullable": true,
 						"IsComplexType": false,
+						"IsNullable": true,
 						"Length": 256,
 						"Properties": {
 							"HIVE_TYPE_STRING": "string"
@@ -157,7 +157,8 @@
 			"Description": "",
 			"DisplayFolderInfo": "{\"name\":\"Others\",\"colorCode\":\"\"}",
 			"PrimaryKeys": "NPI",
-			"spark.sql.sources.provider": "csv"
+			"spark.sql.sources.provider": "csv",
+			"sql:IsAppendOnly": true
 		},
 		"Retention": 0,
 		"Temporary": false,
