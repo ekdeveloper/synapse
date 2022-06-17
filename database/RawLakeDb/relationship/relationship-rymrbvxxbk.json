@@ -10,11 +10,11 @@
 			"Type": "SPARK"
 		},
 		"FromTableName": "providers",
-		"ToTableName": "",
+		"ToTableName": "Locations",
 		"ColumnRelationshipInformations": [
 			{
-				"FromColumnName": "",
-				"ToColumnName": ""
+				"FromColumnName": "Location",
+				"ToColumnName": "Name"
 			}
 		],
 		"RelationshipType": 0
