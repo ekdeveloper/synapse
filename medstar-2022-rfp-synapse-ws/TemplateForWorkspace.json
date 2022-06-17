@@ -64,6 +64,24 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/ProviderCsvMapping')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CsvProviderMapping')]",
+			"type": "Microsoft.Synapse/workspaces/dataMappers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -1121,6 +1139,106 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Providers]\nGO\nSELECT TOP(10) *\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    FIELDTERMINATOR = ',',\n    FIRSTROW = 1\n) WITH \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV_Duplicates')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Providers]\nGO\n\ncreate EXTERNAL table [dbo].[providerduplicate] \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n)\nWITH\n(\n    Location = 'providers/test_duplicate/',\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = csvFileFormat\n) \n\n\nSELECT * from providers.dbo.providerduplicate;\nSELECT DISTINCT * from providers.dbo.providerduplicate;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV_Table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Providers]\nGO\n\ncreate EXTERNAL file format csvFileFormat WITH\n(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS\n    (\n        FIELD_TERMINATOR = N',',\n        USE_TYPE_DEFAULT = TRUE,\n        STRING_DELIMITER = '\"',\n        ENCODING = 'UTF8'\n    )\n);\n\ncreate EXTERNAL table [dbo].[providercsv] \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n)\nWITH\n(\n    Location = 'providers/test/',\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = csvFileFormat\n) \n\nSELECT Top(10) * from providers.dbo.providercsv;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_JSON')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.firstname') as firstname,\n    JSON_VALUE(doc, '$.lastname') as lastname,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/Clients.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Clients",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_JSON_Copy1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.resourceType') as resourceType,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/raw/true/2021/11/11/Blake449_Swift555_fd4fb1ee-3f68-fd42-0610-07f1bfe9b708.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows\n\n-- test remove all spaces",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "Clients",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Synapse Serverless SQL scripts')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -1132,6 +1250,26 @@
 					},
 					"currentConnection": {
 						"databaseName": "Providers",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/cost')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT [type],\n    [data_processed_mb],\n    CAST(5 * [data_processed_mb] / (1024.0 * 1024.0 ) AS DECIMAL(12,2)) AS cost\nFROM sys.dm_external_data_processed;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
 						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
@@ -1287,8 +1425,8 @@
 									"Properties": {
 										"path": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/raw/true/Locations",
 										"delimiter": ",",
-										"multiLine": "false",
 										"firstRowAsHeader": "false",
+										"multiLine": "false",
 										"serialization.format": "1",
 										"escape": "\\",
 										"quote": "\"",
@@ -1320,8 +1458,7 @@
 							},
 							"Retention": 0,
 							"Temporary": false,
-							"IsRewriteEnabled": false,
-							"Partitioning": {}
+							"IsRewriteEnabled": false
 						},
 						"Source": {
 							"Type": "SPARK"
@@ -1425,8 +1562,8 @@
 									"Properties": {
 										"path": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv",
 										"delimiter": ",",
-										"multiLine": "false",
 										"firstRowAsHeader": "true",
+										"multiLine": "false",
 										"serialization.format": "1",
 										"FormatTypeSetToDatabaseDefault": false,
 										"header": "true"
@@ -1495,7 +1632,213 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/ProviderCsvMapping')]",
+			"name": "[concat(parameters('workspaceName'), '/Test')]",
+			"type": "Microsoft.Synapse/workspaces/databases",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"Ddls": [
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Name": "Test",
+							"EntityType": "DATABASE",
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"Properties": {
+								"IsSyMSCDMDatabase": true
+							},
+							"Source": {
+								"Provider": "ADLS",
+								"Location": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/Test",
+								"Properties": {
+									"FormatType": "csv",
+									"LinkedServiceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage"
+								}
+							}
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					},
+					{
+						"ActionType": "CREATE",
+						"OldEntity": null,
+						"NewEntity": {
+							"Name": "test",
+							"EntityType": "TABLE",
+							"Namespace": {
+								"DatabaseName": "Test"
+							},
+							"Description": "",
+							"TableType": "EXTERNAL",
+							"Origin": {
+								"Type": "SPARK"
+							},
+							"StorageDescriptor": {
+								"Columns": [
+									{
+										"Name": "Id",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": false,
+											"Length": 256,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "Provider_Type",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "NAME",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "GENDER",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "SPECIALITY",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "ADDRESS",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "CITY",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "STATE",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									},
+									{
+										"Name": "ZIP",
+										"OriginDataTypeName": {
+											"TypeName": "string",
+											"IsComplexType": false,
+											"IsNullable": true,
+											"Length": 8000,
+											"Properties": {
+												"HIVE_TYPE_STRING": "string"
+											}
+										}
+									}
+								],
+								"Format": {
+									"InputFormat": "org.apache.hadoop.mapred.SequenceFileInputFormat",
+									"OutputFormat": "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat",
+									"FormatType": "csv",
+									"SerializeLib": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+									"Properties": {
+										"path": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv",
+										"delimiter": ",",
+										"multiLine": "false",
+										"firstRowAsHeader": "true",
+										"serialization.format": "1",
+										"FormatTypeSetToDatabaseDefault": false,
+										"header": "true"
+									}
+								},
+								"Source": {
+									"Provider": "ADLS",
+									"Location": "abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv",
+									"Properties": {
+										"LinkedServiceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+										"LocationSetToDatabaseDefault": false
+									}
+								},
+								"Properties": {
+									"textinputformat.record.delimiter": ",",
+									"compression": "{\"type\":\"None\",\"level\":\"optimal\"}",
+									"derivedModelAttributeInfo": "{\"attributeReferences\":{}}"
+								},
+								"Compressed": false,
+								"IsStoredAsSubdirectories": false
+							},
+							"Properties": {
+								"Description": "",
+								"DisplayFolderInfo": "{\"name\":\"Others\",\"colorCode\":\"\"}",
+								"PrimaryKeys": "Id",
+								"spark.sql.sources.provider": "csv"
+							},
+							"Retention": 0,
+							"Temporary": false,
+							"IsRewriteEnabled": false,
+							"Partitioning": {}
+						},
+						"Source": {
+							"Type": "SPARK"
+						}
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/mapcsv')]",
 			"type": "Microsoft.Synapse/workspaces/dataMappers",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {},
@@ -1504,7 +1847,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/CsvProviderMapping')]",
+			"name": "[concat(parameters('workspaceName'), '/mapcsv')]",
 			"type": "Microsoft.Synapse/workspaces/dataMappers",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {},
@@ -1513,124 +1856,125 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"name": "[concat(parameters('workspaceName'), '/mapcsv_test_DataFlow')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"content": {
-					"query": "Use [Providers]\nGO\nSELECT TOP(10) *\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/providers/providers.csv',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    FIELDTERMINATOR = ',',\n    FIRSTROW = 1\n) WITH \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n) as rows",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "Providers",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
+				"folder": {
+					"name": "mapcsv"
 				},
-				"type": "SqlQuery"
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+								"type": "LinkedServiceReference"
+							},
+							"name": "providerSource"
+						}
+					],
+					"sinks": [
+						{
+							"name": "testSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Selecttest"
+						}
+					],
+					"script": "source(output(\n\t\tId as string,\n\t\tProvider_Type as string,\n\t\tNAME as string,\n\t\tGENDER as string,\n\t\tSPECIALITY as string,\n\t\tADDRESS as string,\n\t\tCITY as string,\n\t\tSTATE as string,\n\t\tZIP as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: 'medstarrfpdatalakefs',\n\tfolderPath: 'providers',\n\tfileName: 'providers.csv',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true) ~> providerSource\nproviderSource select(mapColumn(\n\t\tId,\n\t\tProvider_Type,\n\t\tNAME,\n\t\tGENDER,\n\t\tSPECIALITY,\n\t\tADDRESS,\n\t\tCITY,\n\t\tSTATE,\n\t\tZIP\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> Selecttest\nSelecttest sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tstore: 'synapse',\n\tdatabaseType: 'spark',\n\tformat: 'table',\n\tdatabase: 'Test',\n\ttableName: 'test',\n\tinput(\n\t\tId as string,\n\t\tProvider_Type as string,\n\t\tNAME as string,\n\t\tGENDER as string,\n\t\tSPECIALITY as string,\n\t\tADDRESS as string,\n\t\tCITY as string,\n\t\tSTATE as string,\n\t\tZIP as string\n\t)) ~> testSink"
+				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage')]"
+			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_JSON')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"name": "[concat(parameters('workspaceName'), '/C0_mapcsv')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"content": {
-					"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.firstname') as firstname,\n    JSON_VALUE(doc, '$.lastname') as lastname,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/Clients.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "Clients",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
+				"activities": [
+					{
+						"name": "mapcsv_test_DataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "mapcsv_test_DataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"providerSource": {},
+									"testSink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"concurrency": 1,
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
 				},
-				"type": "SqlQuery"
+				"folder": {
+					"name": "Provider/mapcsv"
+				},
+				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/mapcsv_test_DataFlow')]"
+			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_JSON_Copy1')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"name": "[concat(parameters('workspaceName'), '/mapcsv_StartingPipeline')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"content": {
-					"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.resourceType') as resourceType,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/raw/true/2021/11/11/Blake449_Swift555_fd4fb1ee-3f68-fd42-0610-07f1bfe9b708.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows\n\n-- test remove all spaces",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "Clients",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
+				"activities": [
+					{
+						"name": "C0_mapcsv",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "C0_mapcsv",
+								"type": "PipelineReference"
+							},
+							"parameters": {}
+						}
+					}
+				],
+				"concurrency": 1,
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
 				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/cost')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "SELECT [type],\n    [data_processed_mb],\n    CAST(5 * [data_processed_mb] / (1024.0 * 1024.0 ) AS DECIMAL(12,2)) AS cost\nFROM sys.dm_external_data_processed;",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "master",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
+				"folder": {
+					"name": "Provider/mapcsv"
 				},
-				"type": "SqlQuery"
+				"annotations": []
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV_Table')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "Use [Providers]\nGO\n\ncreate EXTERNAL file format csvFileFormat WITH\n(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS\n    (\n        FIELD_TERMINATOR = N',',\n        USE_TYPE_DEFAULT = TRUE,\n        STRING_DELIMITER = '\"',\n        ENCODING = 'UTF8'\n    )\n);\n\ncreate EXTERNAL table [dbo].[providercsv] \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n)\nWITH\n(\n    Location = 'providers/test/',\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = csvFileFormat\n) \n\nSELECT Top(10) * from providers.dbo.providercsv;",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "Providers",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/MyDataLakeScript_CSV_Duplicates')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "Use [Providers]\nGO\n\ncreate EXTERNAL table [dbo].[providerduplicate] \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n)\nWITH\n(\n    Location = 'providers/test_duplicate/',\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = csvFileFormat\n) \n\nSELECT DISTINCT * from providers.dbo.providerduplicate;",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "Providers",
-						"poolName": "Built-in"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/C0_mapcsv')]"
+			]
 		}
 	]
 }
