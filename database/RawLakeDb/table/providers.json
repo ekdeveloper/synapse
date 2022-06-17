@@ -14,11 +14,11 @@
 		"StorageDescriptor": {
 			"Columns": [
 				{
-					"Name": "Id",
+					"Name": "NPI",
 					"OriginDataTypeName": {
 						"TypeName": "string",
+						"IsNullable": false,
 						"IsComplexType": false,
-						"IsNullable": true,
 						"Length": 256,
 						"Properties": {
 							"HIVE_TYPE_STRING": "string"
@@ -26,11 +26,11 @@
 					}
 				},
 				{
-					"Name": "ORGANIZATION",
+					"Name": "PROVIDER_TYPE",
 					"OriginDataTypeName": {
 						"TypeName": "string",
-						"IsComplexType": false,
 						"IsNullable": true,
+						"IsComplexType": false,
 						"Length": 256,
 						"Properties": {
 							"HIVE_TYPE_STRING": "string"
@@ -120,39 +120,6 @@
 							"HIVE_TYPE_STRING": "string"
 						}
 					}
-				},
-				{
-					"Name": "LAT",
-					"OriginDataTypeName": {
-						"TypeName": "float",
-						"IsComplexType": false,
-						"IsNullable": true,
-						"Properties": {
-							"HIVE_TYPE_STRING": "float"
-						}
-					}
-				},
-				{
-					"Name": "LON",
-					"OriginDataTypeName": {
-						"TypeName": "float",
-						"IsComplexType": false,
-						"IsNullable": true,
-						"Properties": {
-							"HIVE_TYPE_STRING": "float"
-						}
-					}
-				},
-				{
-					"Name": "UTILIZATION",
-					"OriginDataTypeName": {
-						"TypeName": "long",
-						"IsComplexType": false,
-						"IsNullable": true,
-						"Properties": {
-							"HIVE_TYPE_STRING": "long"
-						}
-					}
 				}
 			],
 			"Format": {
@@ -180,7 +147,7 @@
 			},
 			"Properties": {
 				"textinputformat.record.delimiter": ",",
-				"compression": "",
+				"compression": "{\"type\":\"None\",\"level\":\"optimal\"}",
 				"derivedModelAttributeInfo": "{\"attributeReferences\":{}}"
 			},
 			"Compressed": false,
@@ -189,7 +156,7 @@
 		"Properties": {
 			"Description": "",
 			"DisplayFolderInfo": "{\"name\":\"Others\",\"colorCode\":\"\"}",
-			"PrimaryKeys": "",
+			"PrimaryKeys": "NPI",
 			"spark.sql.sources.provider": "csv"
 		},
 		"Retention": 0,
