@@ -1,0 +1,24 @@
+{
+	"name": "ProviderDataMappingCsv_StartingPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "C0_ProviderDataMappingCsv",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "C0_ProviderDataMappingCsv",
+						"type": "PipelineReference"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"folder": {
+			"name": "ProviderDataMappingCsv"
+		},
+		"annotations": []
+	}
+}
