@@ -2,7 +2,7 @@
 	"name": "MyDataLakeScript_JSON_Copy1",
 	"properties": {
 		"content": {
-			"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.resourceType') as resourceType,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/raw/true/2021/11/11/Blake449_Swift555_fd4fb1ee-3f68-fd42-0610-07f1bfe9b708.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows",
+			"query": "Use [Clients]\nGO\nSELECT \n    JSON_VALUE(doc, '$.resourceType') as resourceType,\n    doc\nfrom OPENROWSET\n(\n    BULK 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net/clients/raw/true/2021/11/11/Blake449_Swift555_fd4fb1ee-3f68-fd42-0610-07f1bfe9b708.json',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n) WITH \n(\n    doc varchar(MAX) \n) as rows\n\n-- test remove all spaces",
 			"metadata": {
 				"language": "sql"
 			},
