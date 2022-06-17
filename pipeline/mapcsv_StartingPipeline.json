@@ -17,7 +17,7 @@
 		],
 		"concurrency": 1,
 		"folder": {
-			"name": "mapcsv"
+			"name": "Provider/mapcsv"
 		},
 		"annotations": []
 	}
