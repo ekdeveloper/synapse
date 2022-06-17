@@ -1,0 +1,31 @@
+{
+	"name": "mapcsv_test_DataFlow",
+	"properties": {
+		"folder": {
+			"name": "mapcsv"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+						"type": "LinkedServiceReference"
+					},
+					"name": "providerSource"
+				}
+			],
+			"sinks": [
+				{
+					"name": "testSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Selecttest"
+				}
+			],
+			"script": "source(output(\n\t\tId as string,\n\t\tProvider_Type as string,\n\t\tNAME as string,\n\t\tGENDER as string,\n\t\tSPECIALITY as string,\n\t\tADDRESS as string,\n\t\tCITY as string,\n\t\tSTATE as string,\n\t\tZIP as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: 'medstarrfpdatalakefs',\n\tfolderPath: 'providers',\n\tfileName: 'providers.csv',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true) ~> providerSource\nproviderSource select(mapColumn(\n\t\tId,\n\t\tProvider_Type,\n\t\tNAME,\n\t\tGENDER,\n\t\tSPECIALITY,\n\t\tADDRESS,\n\t\tCITY,\n\t\tSTATE,\n\t\tZIP\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> Selecttest\nSelecttest sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tstore: 'synapse',\n\tdatabaseType: 'spark',\n\tformat: 'table',\n\tdatabase: 'Test',\n\ttableName: 'test',\n\tinput(\n\t\tId as string,\n\t\tProvider_Type as string,\n\t\tNAME as string,\n\t\tGENDER as string,\n\t\tSPECIALITY as string,\n\t\tADDRESS as string,\n\t\tCITY as string,\n\t\tSTATE as string,\n\t\tZIP as string\n\t)) ~> testSink"
+		}
+	}
+}
