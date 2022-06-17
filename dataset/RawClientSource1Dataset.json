@@ -1,0 +1,20 @@
+{
+	"name": "RawClientSource1Dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "clients/raw/",
+				"fileSystem": "medstarrfpdatalakefs"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

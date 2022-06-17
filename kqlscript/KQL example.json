@@ -1,0 +1,16 @@
+{
+	"name": "KQL example",
+	"properties": {
+		"content": {
+			"query": "['providers']\n| mv-expand _source_specialties to typeof(string)\n| project specialty=tostring(parse_json(_source_specialties).specialty)\n| summarize specialtyCount = count() by specialty\n| render piechart",
+			"metadata": {
+				"language": "kql"
+			},
+			"currentConnection": {
+				"poolName": "medstarrfpde",
+				"databaseName": "dataexplorer"
+			}
+		},
+		"type": "KqlQuery"
+	}
+}

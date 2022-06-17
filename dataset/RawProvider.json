@@ -1,0 +1,797 @@
+{
+	"name": "RawProvider",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "medstar-2022-rfp-synapse-ws-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "providers/raw",
+				"fileSystem": "medstarrfpdatalakefs"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"_index": {
+					"type": "string"
+				},
+				"_type": {
+					"type": "string"
+				},
+				"_source": {
+					"type": "object",
+					"properties": {
+						"provider_type": {
+							"type": "string"
+						},
+						"metadata": {
+							"type": "object",
+							"properties": {
+								"last_updated": {
+									"type": "string"
+								},
+								"_source": {
+									"type": "object",
+									"properties": {
+										"last_updated": {
+											"type": "string"
+										},
+										"created": {
+											"type": "null"
+										},
+										"pma_last_updated": {
+											"type": "null"
+										},
+										"last_modified": {
+											"type": "string"
+										}
+									}
+								},
+								"last_modified": {
+									"type": "string"
+								}
+							}
+						},
+						"notes": {
+							"type": "null"
+						},
+						"chair_at_api": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"MedStar Washington Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Franklin Square Medical Center": {
+										"type": "string"
+									},
+									"MedStar Harbor Hospital": {
+										"type": "string"
+									},
+									"MedStar National Rehabilitation Network": {
+										"type": "string"
+									},
+									"MedStar Medical Group": {
+										"type": "string"
+									},
+									"MedStar Union Memorial Hospital": {
+										"type": "string"
+									},
+									"MedStar Georgetown University Hospital": {
+										"type": "string"
+									},
+									"MedStar Southern Maryland Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Good Samaritan Hospital": {
+										"type": "string"
+									},
+									"MedStar Montgomery Medical Center": {
+										"type": "string"
+									},
+									"MedStar St. Mary's Hospital": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"sort_preferences": {
+							"type": "object",
+							"properties": {
+								"networks": {
+									"type": "integer"
+								}
+							}
+						},
+						"blogs": {
+							"type": "null"
+						},
+						"appointment_reasons": {
+							"type": "array"
+						},
+						"clinical_focus": {
+							"type": "string"
+						},
+						"show_in_pmac": {
+							"type": "string"
+						},
+						"provider_is_employed": {
+							"type": "string"
+						},
+						"videos": {
+							"type": "array"
+						},
+						"degrees": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"source": {
+										"type": "string"
+									},
+									"source_url": {
+										"type": "null"
+									}
+								}
+							}
+						},
+						"practice_groups": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"has_info": {
+										"type": "boolean"
+									},
+									"name": {
+										"type": "string"
+									},
+									"id": {
+										"type": "integer"
+									}
+								}
+							}
+						},
+						"age_groups_seen_range": {
+							"type": "null"
+						},
+						"employed": {
+							"type": "boolean"
+						},
+						"default_timezone": {
+							"type": "string"
+						},
+						"network_affiliations": {
+							"type": "array"
+						},
+						"specialties": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"specialty": {
+										"type": "string"
+									},
+									"subspecialty": {
+										"type": "null"
+									},
+									"aliases": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"is_certified": {
+										"type": "boolean"
+									},
+									"practice_focus": {
+										"type": "null"
+									},
+									"eui": {
+										"type": "string"
+									},
+									"piped_name": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"service_line_lead_not_at": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"multi_resource_scheduling": {
+							"type": "null"
+						},
+						"reviews": {
+							"type": "null"
+						},
+						"medical_school": {
+							"type": "array"
+						},
+						"manually_created": {
+							"type": "null"
+						},
+						"id": {
+							"type": "integer"
+						},
+						"customer_code": {
+							"type": "string"
+						},
+						"professional_statement": {
+							"type": "string"
+						},
+						"main_contacts": {
+							"type": "object",
+							"properties": {
+								"phone": {
+									"type": "string"
+								},
+								"fax": {
+									"type": "string"
+								}
+							}
+						},
+						"access_program_status": {
+							"type": "null"
+						},
+						"in_the_news": {
+							"type": "string"
+						},
+						"image_url": {
+							"type": "null"
+						},
+						"raw": {
+							"type": "object",
+							"properties": {
+								"age_groups_seen": {
+									"type": "array"
+								},
+								"primary_specialty": {
+									"type": "string"
+								},
+								"contacts": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"contact_type": {
+												"type": "string"
+											},
+											"extension": {
+												"type": "null"
+											},
+											"subtype": {
+												"type": "null"
+											},
+											"value": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						},
+						"case_types_seen": {
+							"type": "array"
+						},
+						"blacklisted_not_at": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"number_of_videos": {
+							"type": "integer"
+						},
+						"about_the_provider": {
+							"type": "null"
+						},
+						"location_change_form": {
+							"type": "string"
+						},
+						"years_in_practice": {
+							"type": "null"
+						},
+						"primary_video": {
+							"type": "string"
+						},
+						"blacklisted_at": {
+							"type": "array"
+						},
+						"service_line_lead_at": {
+							"type": "array"
+						},
+						"service_line_lead_at_api": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"MedStar Washington Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Franklin Square Medical Center": {
+										"type": "string"
+									},
+									"MedStar Harbor Hospital": {
+										"type": "string"
+									},
+									"MedStar National Rehabilitation Network": {
+										"type": "string"
+									},
+									"MedStar Medical Group": {
+										"type": "string"
+									},
+									"MedStar Union Memorial Hospital": {
+										"type": "string"
+									},
+									"MedStar Georgetown University Hospital": {
+										"type": "string"
+									},
+									"MedStar Southern Maryland Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Good Samaritan Hospital": {
+										"type": "string"
+									},
+									"MedStar Montgomery Medical Center": {
+										"type": "string"
+									},
+									"MedStar St. Mary's Hospital": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"chief_at_api": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"MedStar Washington Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Franklin Square Medical Center": {
+										"type": "string"
+									},
+									"MedStar Harbor Hospital": {
+										"type": "string"
+									},
+									"MedStar National Rehabilitation Network": {
+										"type": "string"
+									},
+									"MedStar Medical Group": {
+										"type": "string"
+									},
+									"MedStar Union Memorial Hospital": {
+										"type": "string"
+									},
+									"MedStar Georgetown University Hospital": {
+										"type": "string"
+									},
+									"MedStar Southern Maryland Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Good Samaritan Hospital": {
+										"type": "string"
+									},
+									"MedStar Montgomery Medical Center": {
+										"type": "string"
+									},
+									"MedStar St. Mary's Hospital": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"chief_not_at": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"scope_of_practice": {
+							"type": "object",
+							"properties": {
+								"types": {
+									"type": "object"
+								},
+								"concepts": {
+									"type": "array"
+								}
+							}
+						},
+						"accepting_new_patients": {
+							"type": "boolean"
+						},
+						"name": {
+							"type": "object",
+							"properties": {
+								"full_with_prefix": {
+									"type": "string"
+								},
+								"full_name": {
+									"type": "string"
+								},
+								"prefix": {
+									"type": "string"
+								},
+								"full_with_degrees": {
+									"type": "string"
+								},
+								"last_name": {
+									"type": "string"
+								},
+								"raw": {
+									"type": "object",
+									"properties": {
+										"full_name": {
+											"type": "string"
+										},
+										"middle_name": {
+											"type": "string"
+										}
+									}
+								},
+								"suffix_with_degrees": {
+									"type": "string"
+								},
+								"middle_name": {
+									"type": "string"
+								},
+								"suffix": {
+									"type": "null"
+								},
+								"first_name": {
+									"type": "string"
+								},
+								"full_with_prefix_and_degrees": {
+									"type": "string"
+								}
+							}
+						},
+						"current_status": {
+							"type": "null"
+						},
+						"is_specialty_care": {
+							"type": "boolean"
+						},
+						"preferred_name": {
+							"type": "null"
+						},
+						"social_sites": {
+							"type": "string"
+						},
+						"show_in_api": {
+							"type": "null"
+						},
+						"gender": {
+							"type": "string"
+						},
+						"appointment_type_code_whitelist": {
+							"type": "array"
+						},
+						"blacklisted_at_api": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"MedStar Washington Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Franklin Square Medical Center": {
+										"type": "string"
+									},
+									"MedStar Harbor Hospital": {
+										"type": "string"
+									},
+									"MedStar National Rehabilitation Network": {
+										"type": "string"
+									},
+									"MedStar Medical Group": {
+										"type": "string"
+									},
+									"MedStar Union Memorial Hospital": {
+										"type": "string"
+									},
+									"MedStar Georgetown University Hospital": {
+										"type": "string"
+									},
+									"MedStar Southern Maryland Hospital Center": {
+										"type": "string"
+									},
+									"MedStar Good Samaritan Hospital": {
+										"type": "string"
+									},
+									"MedStar Montgomery Medical Center": {
+										"type": "string"
+									},
+									"MedStar St. Mary's Hospital": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"primary_specialty": {
+							"type": "string"
+						},
+						"external_id": {
+							"type": "string"
+						},
+						"training": {
+							"type": "array"
+						},
+						"networks": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"network": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"is_doctor": {
+							"type": "boolean"
+						},
+						"board_certifications": {
+							"type": "array"
+						},
+						"insurance_accepted": {
+							"type": "array"
+						},
+						"availability_last_updated": {
+							"type": "null"
+						},
+						"supplemental_videos": {
+							"type": "string"
+						},
+						"number_of_pictures": {
+							"type": "integer"
+						},
+						"referral_phone": {
+							"type": "null"
+						},
+						"languages": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"language": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"chief_at": {
+							"type": "array"
+						},
+						"npi": {
+							"type": "string"
+						},
+						"appt_scheduler_emails": {
+							"type": "null"
+						},
+						"hospital_affiliations": {
+							"type": "array"
+						},
+						"chair_not_at": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"location_schedule": {
+							"type": "string"
+						},
+						"fellowship": {
+							"type": "string"
+						},
+						"is_primary_care": {
+							"type": "boolean"
+						},
+						"clinical_contact": {
+							"type": "null"
+						},
+						"chair_at": {
+							"type": "array"
+						},
+						"entity_type": {
+							"type": "string"
+						},
+						"podcasts": {
+							"type": "null"
+						},
+						"research_pubs": {
+							"type": "null"
+						},
+						"age_groups_seen": {
+							"type": "array"
+						},
+						"patient_testimonials": {
+							"type": "string"
+						},
+						"awards": {
+							"type": "null"
+						},
+						"professional_activities": {
+							"type": "string"
+						},
+						"is_live": {
+							"type": "boolean"
+						},
+						"locations": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"commercial_entity_name": {
+										"type": "null"
+									},
+									"distance": {
+										"type": "null"
+									},
+									"city": {
+										"type": "string"
+									},
+									"timezone": {
+										"type": "string"
+									},
+									"doctor_contacts": {
+										"type": "object",
+										"properties": {
+											"phone": {
+												"type": "string"
+											},
+											"fax": {
+												"type": "string"
+											}
+										}
+									},
+									"external_id": {
+										"type": "string"
+									},
+									"external_organization_id": {
+										"type": "null"
+									},
+									"networks": {
+										"type": "array"
+									},
+									"type": {
+										"type": "string"
+									},
+									"ehr_location_id": {
+										"type": "null"
+									},
+									"location_contacts": {
+										"type": "object",
+										"properties": {
+											"phone": {
+												"type": "string"
+											},
+											"fax": {
+												"type": "string"
+											}
+										}
+									},
+									"source_system_type": {
+										"type": "null"
+									},
+									"rank": {
+										"type": "integer"
+									},
+									"street1": {
+										"type": "string"
+									},
+									"id": {
+										"type": "string"
+									},
+									"state": {
+										"type": "string"
+									},
+									"street2": {
+										"type": "string"
+									},
+									"email": {
+										"type": "null"
+									},
+									"zip": {
+										"type": "string"
+									},
+									"office_hours": {
+										"type": "null"
+									},
+									"address": {
+										"type": "object",
+										"properties": {
+											"line": {
+												"type": "string"
+											},
+											"building": {
+												"type": "string"
+											}
+										}
+									},
+									"source_system": {
+										"type": "null"
+									},
+									"coordinates": {
+										"type": "object",
+										"properties": {
+											"lon": {
+												"type": "number"
+											},
+											"lat": {
+												"type": "number"
+											}
+										}
+									},
+									"primary_marketable_location_id": {
+										"type": "null"
+									},
+									"raw": {
+										"type": "object",
+										"properties": {
+											"suite": {
+												"type": "string"
+											},
+											"street1": {
+												"type": "string"
+											},
+											"street2": {
+												"type": "string"
+											},
+											"contacts": {
+												"type": "array"
+											}
+										}
+									},
+									"suite": {
+										"type": "null"
+									},
+									"accepting_new_patients": {
+										"type": "null"
+									},
+									"facility_fee": {
+										"type": "boolean"
+									},
+									"name": {
+										"type": "string"
+									},
+									"associated_marketable_location_ids": {
+										"type": "array"
+									}
+								}
+							}
+						},
+						"status_transitions": {
+							"type": "null"
+						},
+						"personal_email": {
+							"type": "null"
+						}
+					}
+				},
+				"_id": {
+					"type": "string"
+				},
+				"_score": {
+					"type": "number"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

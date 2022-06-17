@@ -1,0 +1,17 @@
+{
+	"name": "updatecuratedclients",
+	"properties": {
+		"content": {
+			"query": "CREATE PROC [dbo].[updatecuratedclients]\nAS\nBEGIN\nUPDATE [dbo].[curatedclients]\nSET version = 1\nEND",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "medstar-rfp-client-sql-db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

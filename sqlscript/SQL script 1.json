@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "-- If you do not have a Master Key on your DW you will need to create one\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'medstarrfp@2022' ;\n\nCREATE DATABASE SCOPED CREDENTIAL msi_cred \nWITH IDENTITY = 'Managed Service Identity' ;\n\nCREATE EXTERNAL DATA SOURCE datalake \nWITH \n  (\n    LOCATION = 'abfss://medstarrfpdatalakefs@medstarrfpdatalakeeastus.dfs.core.windows.net' , \n    CREDENTIAL = msi_cred\n  ) ;  \n\nCREATE EXTERNAL FILE FORMAT parquet_format  \nWITH (  \n  FORMAT_TYPE = PARQUET,  \n  DATA_COMPRESSION =  'org.apache.hadoop.io.compress.GzipCodec'\n); \n\nCREATE EXTERNAL FILE FORMAT json_format  \nWITH (  \n    FORMAT_TYPE = JSON,  \n    DATA_COMPRESSION =  'org.apache.hadoop.io.compress.GzipCodec'\n);\n\nCREATE EXTERNAL FILE FORMAT comma_delimit_format  \nWITH (  \n    FORMAT_TYPE = DELIMITEDTEXT,  \n    FORMAT_OPTIONS (  \n        FIELD_TERMINATOR = ',',  \n        DATE_FORMAT = 'MM/dd/yyyy' ),  \n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.GzipCodec'\n);  \n\nCREATE EXTERNAL TABLE [dbo].[provider]\n( [NPI] [int] NOT NULL,\n  [ProviderName] nvarchar NULL,\n  [ProviderPrimarySpeciality] nvarchar NULL )\nWITH\n(\n    LOCATION='/providers/raw/true/' ,\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = json_format,\n    REJECT_TYPE = VALUE ,\n    REJECT_VALUE = 0\n) ;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "Providers",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
