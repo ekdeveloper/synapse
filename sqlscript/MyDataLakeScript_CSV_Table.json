@@ -1,0 +1,17 @@
+{
+	"name": "MyDataLakeScript_CSV_Table",
+	"properties": {
+		"content": {
+			"query": "Use [Providers]\nGO\n\ncreate EXTERNAL file format csvFileFormat WITH\n(\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS\n    (\n        FIELD_TERMINATOR = N',',\n        USE_TYPE_DEFAULT = TRUE,\n        STRING_DELIMITER = '\"',\n        ENCODING = 'UTF8'\n    )\n);\n\ncreate EXTERNAL table [dbo].[providercsv] \n(\n    Id\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8, \n    Provider_Type\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    NAME\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    GENDER\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    SPECIALITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ADDRESS\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    CITY\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    STATE\tVARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8,\n    ZIP VARCHAR(50) COLLATE Latin1_General_100_CI_AS_SC_UTF8\n)\nWITH\n(\n    Location = 'providers/test/',\n    DATA_SOURCE = datalake,\n    FILE_FORMAT = csvFileFormat\n) \n\nSELECT Top(10) * from providers.dbo.providercsv;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "Providers",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
